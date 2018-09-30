@@ -6,7 +6,7 @@ public class PlayerCameraScript : MonoBehaviour {
     [SerializeField]
     GameObject target;
     [SerializeField]
-    float smoothTime = 10.0f;
+    float smoothTime = 100.0f;
     [SerializeField]
     float zOffset;
     [SerializeField]
@@ -66,29 +66,36 @@ public class PlayerCameraScript : MonoBehaviour {
 
         //bounds.Encapsulate(mousePos);
 
-        Vector3 bounds; 
-        bounds.x = (mousePos.x + transform.position.x) / 2;
-        bounds.z = (mousePos.z + transform.position.z) / 2;
-        bounds.y = target.transform.position.y;
+       
 
-        Vector3 dist;
-        dist.x = mousePos.x - target.transform.position.x;
-        dist.y = 0.0f;
-        dist.z = mousePos.z - target.transform.position.z;
+        Vector3 distPtoC;
+        distPtoC.x = transform.position.x - target.transform.position.x;
+        distPtoC.y = 0.0f;
+        distPtoC.z = transform.position.z - target.transform.position.z;
+
+        Vector3 distPtoM; //player to mouse dist
+        distPtoM.x = mousePos.x - target.transform.position.x;
+        distPtoM.y = 0.0f;
+        distPtoM.z = mousePos.z - target.transform.position.z;
+
+        Vector3 bounds;
+        bounds = distPtoM / 2.0f;
 
         Debug.DrawLine(mousePos, target.transform.position, Color.red);
 
-        mag = dist.magnitude;
-        if ((bounds - target.transform.position).magnitude > 10.0f)
+        mag = distPtoC.magnitude;
+        if ((distPtoC).magnitude > 10.0f)
         {
             
-            return;
+            
         }
-        
-        newPos.x = bounds.x + xOffset;
-        newPos.z = bounds.z + zOffset;
-        newPos.y = bounds.y + yOffset;
-        transform.position = Vector3.Lerp(transform.position, newPos, smoothTime * Time.deltaTime);
+        else
+        {
+            newPos.x = bounds.x + xOffset;
+            newPos.z = bounds.z + zOffset;
+            newPos.y = bounds.y + yOffset;
+            transform.position = Vector3.SmoothDamp(transform.position, newPos, ref smoothVelocity, smoothTime);
+        }
     }
 
     public void SetMousePos(Vector3 _mousePos)
