@@ -12,13 +12,15 @@ public class Bullet : NetworkBehaviour {
     [SerializeField]
     float damage;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         mybt = GetComponent<TrailRenderer>();
         yPos = transform.position.y;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         timeAlive += Time.deltaTime;
         if (isActive)
         {
@@ -31,7 +33,7 @@ public class Bullet : NetworkBehaviour {
         }
         else
         {
-            if (timeAlive >= mybt.time * 2)
+            if (timeAlive >= mybt.time * 2.0f)
             {
                 CmdDie();
             }

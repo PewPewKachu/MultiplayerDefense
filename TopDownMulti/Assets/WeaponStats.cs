@@ -23,7 +23,7 @@ public class WeaponStats
     [Header("WeaponStats")]
     public GunType gunType;
     public BulletType bulletType;
-    string gunName;
+    public string gunName;
     public int CurrentClip;
     public int ClipSize;
     public float FireRate;
