@@ -75,20 +75,20 @@ public class PlayerController : NetworkBehaviour {
             return;
         }
         #region UI
-        //switch (currWeaponStats.bulletType) 
-        //{
-        //    case BulletType._45:
-        //        ammoText.text = currentClip.ToString() + "/" + _45CurrentAmmo.ToString();
-        //        break;
-        //    case BulletType._556:
-        //        ammoText.text = currentClip.ToString() + "/" + _556CurrentAmmo.ToString();
-        //        break;
-        //    case BulletType._9mm:
-        //        ammoText.text = currentClip.ToString() + "/" + _9mmCurrentAmmo.ToString();
-        //        break;
-        //    default:
-        //        break;
-        //}
+        switch (currWeaponStats.bulletType) 
+        {
+            case BulletType._45:
+                ammoText.text = currentClip.ToString() + "/" + _45CurrentAmmo.ToString();
+                break;
+            case BulletType._556:
+                ammoText.text = currentClip.ToString() + "/" + _556CurrentAmmo.ToString();
+                break;
+            case BulletType._9mm:
+                ammoText.text = currentClip.ToString() + "/" + _9mmCurrentAmmo.ToString();
+                break;
+            default:
+                break;
+        }
 
         //if (Input.GetKeyDown(KeyCode.Tab))
         //{
