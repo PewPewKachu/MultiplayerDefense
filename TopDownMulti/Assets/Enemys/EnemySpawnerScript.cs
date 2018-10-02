@@ -7,7 +7,7 @@ public class EnemySpawnerScript : NetworkBehaviour {
     GameObject[] spawnPoints;
 
     [SerializeField]
-    GameObject toSpawn;
+    GameObject[] toSpawn;
 
     [SerializeField]
     float spawnCooldown = 0;
@@ -36,7 +36,7 @@ public class EnemySpawnerScript : NetworkBehaviour {
     void CmdSpawnEnemy()
     {
         int spawnIndex = Random.Range(0, spawnPoints.Length);
-        GameObject enemyToSpawn = (GameObject)Instantiate(toSpawn, spawnPoints[spawnIndex].transform.position, spawnPoints[spawnIndex].transform.rotation);
+        GameObject enemyToSpawn = (GameObject)Instantiate(toSpawn[Random.Range(0, toSpawn.Length)], spawnPoints[spawnIndex].transform.position, spawnPoints[spawnIndex].transform.rotation);
         spawnCooldown = 2;
 
         NetworkServer.Spawn(enemyToSpawn);
