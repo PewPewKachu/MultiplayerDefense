@@ -2,11 +2,18 @@
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class PlayerController : NetworkBehaviour {
     [SyncVar]
     [SerializeField]
     WeaponStats currWeaponStats;
+    [SyncVar]
+    [SerializeField]
+    WeaponStats primaryGun;
+    [SyncVar]
+    [SerializeField]
+    WeaponStats secondaryGun;
 
     [SerializeField]
     Camera myCam;
@@ -30,11 +37,11 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     Text ammoText;
     [SerializeField]
-    GameObject Inventory;
+    GameObject UpgradeScreen;
 
     //Ammo Stats
-    public int _45MaxAmmo = 300;
-    public int _45CurrentAmmo = 300;
+    public int _45MaxAmmo = 150;
+    public int _45CurrentAmmo = 150;
 
     public int _556MaxAmmo = 300;
     public int _556CurrentAmmo = 300;
@@ -58,12 +65,17 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     bool isReloading = false;
 
+    
     double netDeltaTime;
     double netPrevTime;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         plane = new Plane(Vector3.up, transform.position);
+        currWeaponStats = primaryGun;
         _9mmCurrentAmmo = 300;
+        _45CurrentAmmo = 150;
+
         currentClip = currWeaponStats.ClipSize;
     }
 	
@@ -74,34 +86,35 @@ public class PlayerController : NetworkBehaviour {
         {
             return;
         }
+
         #region UI
         switch (currWeaponStats.bulletType) 
         {
             case BulletType._45:
-                ammoText.text = currentClip.ToString() + "/" + _45CurrentAmmo.ToString();
+                ammoText.text = currWeaponStats.gunName + ": " + currWeaponStats.CurrentClip.ToString() + "/" + _45CurrentAmmo.ToString();
                 break;
             case BulletType._556:
-                ammoText.text = currentClip.ToString() + "/" + _556CurrentAmmo.ToString();
+                ammoText.text = currWeaponStats.gunName + ": " + currWeaponStats.CurrentClip.ToString() + "/" + _556CurrentAmmo.ToString();
                 break;
             case BulletType._9mm:
-                ammoText.text = currentClip.ToString() + "/" + _9mmCurrentAmmo.ToString();
+                ammoText.text = currWeaponStats.gunName + ": " + currWeaponStats.CurrentClip.ToString() + "/" + _9mmCurrentAmmo.ToString();
                 break;
             default:
                 break;
         }
 
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    if (!Inventory.activeSelf)
-        //    {
-        //        Inventory.SetActive(true);
-        //        Inventory.GetComponent<UI_Inventory>().UpdatePrimary1(currWeaponStats);
-        //    }
-        //    else
-        //    {
-        //        Inventory.SetActive(false);
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (!UpgradeScreen.activeSelf)
+            {
+                UpgradeScreen.SetActive(true);
+                //UpgradeScreen.GetComponent<UI_Inventory>().UpdatePrimary1(currWeaponStats);
+            }
+            else
+            {
+                UpgradeScreen.SetActive(false);
+            }
+        }
         #endregion
 
         #region Cooldowns
@@ -162,6 +175,42 @@ public class PlayerController : NetworkBehaviour {
         {
             CmdReload();
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            CmdSwapWeapon(GunType.PRIMARY);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CmdSwapWeapon(GunType.SECONDARY);
+        }
+    }
+
+    [Command]
+    private void CmdSwapWeapon(GunType _gunType)
+    {
+        switch (_gunType)
+        {
+            case GunType.PRIMARY:
+                if (currWeaponStats.gunType == GunType.PRIMARY)
+                {
+                    return;
+                }
+
+                currWeaponStats = primaryGun;
+                break;
+            case GunType.SECONDARY:
+                if (currWeaponStats.gunType == GunType.SECONDARY)
+                {
+                    return;
+                }
+
+                currWeaponStats = secondaryGun;
+                break;
+            default:
+                break;
+        }
     }
 
     [Command]
@@ -208,13 +257,14 @@ public class PlayerController : NetworkBehaviour {
             currentClip = currWeaponStats.CurrentClip;
             GameObject bulletToSpawn = (GameObject)Instantiate(bulletPrefab, transform.position + new Vector3(0, 1.3f, 0), playerObj.transform.rotation);
             float randomAngle = 10 * ((100 - currWeaponStats.Accuracy) / 100f);
-            bulletToSpawn.transform.Rotate(0, Random.Range(-randomAngle, randomAngle), 0);
+            bulletToSpawn.transform.Rotate(0, UnityEngine.Random.Range(-randomAngle, randomAngle), 0);
             bulletToSpawn.GetComponent<Bullet>().SetDamage(currWeaponStats.Damage);
             NetworkServer.Spawn(bulletToSpawn);
 
         }
     }
 
+    
     [Command]
     void CmdReload()
     {

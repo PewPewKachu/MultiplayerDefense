@@ -12,13 +12,15 @@ public class Bullet : NetworkBehaviour {
     [SerializeField]
     float damage;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         mybt = GetComponent<TrailRenderer>();
         yPos = transform.position.y;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         timeAlive += Time.deltaTime;
         if (isActive)
         {
@@ -26,12 +28,12 @@ public class Bullet : NetworkBehaviour {
             {
                 isActive = false;
             }
-            transform.Translate(Vector3.forward * 40 * Time.deltaTime);
+            transform.Translate(Vector3.forward * 50 * Time.deltaTime);
             transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
         }
         else
         {
-            if (timeAlive >= mybt.time * 2)
+            if (timeAlive >= mybt.time * 2.0f)
             {
                 CmdDie();
             }
