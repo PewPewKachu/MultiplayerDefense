@@ -31,5 +31,6 @@ public class WeaponStats
     public float Accuracy;
     public float ReloadTime;
 
+    //[Header("WeaponUpgrades")]
     
 }

@@ -6,7 +6,7 @@ public class PlayerCameraScript : MonoBehaviour {
     [SerializeField]
     GameObject target;
     [SerializeField]
-    float smoothTime = 100.0f;
+    float smoothTime = 3.0f;
     [SerializeField]
     float zOffset;
     [SerializeField]
@@ -36,7 +36,7 @@ public class PlayerCameraScript : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void LateUpdate()
     {
         //newPos.x = target.transform.position.x + xOffset;
         //newPos.z = target.transform.position.z + zOffset;

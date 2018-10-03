@@ -28,7 +28,7 @@ public class Bullet : NetworkBehaviour {
             {
                 isActive = false;
             }
-            transform.Translate(Vector3.forward * 40 * Time.deltaTime);
+            transform.Translate(Vector3.forward * 50 * Time.deltaTime);
             transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
         }
         else

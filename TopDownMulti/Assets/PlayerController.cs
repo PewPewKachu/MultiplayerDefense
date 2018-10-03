@@ -72,6 +72,7 @@ public class PlayerController : NetworkBehaviour {
 	void Start ()
     {
         plane = new Plane(Vector3.up, transform.position);
+        currWeaponStats = primaryGun;
         _9mmCurrentAmmo = 300;
         _45CurrentAmmo = 150;
 
