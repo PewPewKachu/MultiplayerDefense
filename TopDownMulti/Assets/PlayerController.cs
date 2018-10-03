@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     Text ammoText;
     [SerializeField]
-    GameObject Inventory;
+    GameObject UpgradeScreen;
 
     //Ammo Stats
     public int _45MaxAmmo = 150;
@@ -103,18 +103,18 @@ public class PlayerController : NetworkBehaviour {
                 break;
         }
 
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    if (!Inventory.activeSelf)
-        //    {
-        //        Inventory.SetActive(true);
-        //        Inventory.GetComponent<UI_Inventory>().UpdatePrimary1(currWeaponStats);
-        //    }
-        //    else
-        //    {
-        //        Inventory.SetActive(false);
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (!UpgradeScreen.activeSelf)
+            {
+                UpgradeScreen.SetActive(true);
+                //UpgradeScreen.GetComponent<UI_Inventory>().UpdatePrimary1(currWeaponStats);
+            }
+            else
+            {
+                UpgradeScreen.SetActive(false);
+            }
+        }
         #endregion
 
         #region Cooldowns
