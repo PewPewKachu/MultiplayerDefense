@@ -13,7 +13,8 @@ public enum BulletType
 {
     _45,
     _556,
-    _9mm
+    _9mm,
+    _762
 }
 
 [System.Serializable]

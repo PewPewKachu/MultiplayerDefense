@@ -37,6 +37,8 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     Text ammoText;
     [SerializeField]
+    Text primaryGunText;
+    [SerializeField]
     GameObject UpgradeScreen;
 
     //Ammo Stats
@@ -102,6 +104,8 @@ public class PlayerController : NetworkBehaviour {
             default:
                 break;
         }
+
+        UpdateUpgradesScreen();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -185,6 +189,16 @@ public class PlayerController : NetworkBehaviour {
         {
             CmdSwapWeapon(GunType.SECONDARY);
         }
+    }
+
+    private void UpdateUpgradesScreen()
+    {
+        primaryGunText.text = primaryGun.gunName + "\n" +
+                              "Damage: " + primaryGun.Damage + "\n" +
+                              "Clip Size: " + primaryGun.ClipSize + "\n" +
+                              "Fire Rate: " + Math.Round(1.0f / primaryGun.FireRate, 2) + " shots/sec" + "\n" +
+                              "Accuracy: " + primaryGun.Accuracy + "\n" +
+                              "Reload Time: " + primaryGun.ReloadTime + " sec";
     }
 
     [Command]
