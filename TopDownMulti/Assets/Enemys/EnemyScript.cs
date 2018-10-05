@@ -11,12 +11,13 @@ public class EnemyScript : NetworkBehaviour
     EnemyType type;
     enum logicState { idel, followPack, agro, attack};
     [SerializeField]
-   logicState curState;
+    [SyncVar]
+    logicState curState;
 
     [SerializeField]
     GameObject[] players, allies;
     [SerializeField]
-    GameObject projectile;
+    GameObject projectile, healthBar, deathParticles;
     [SerializeField]
     NavMeshAgent navAgent;
 
@@ -24,7 +25,8 @@ public class EnemyScript : NetworkBehaviour
     GameObject target, ally;
 
     [SerializeField]
-    float health = 100, speed, rateOfFire;
+    [SyncVar]
+    float health, speed, rateOfFire, maxHealth;
 
     //Raycast
     RaycastHit hit;
@@ -36,7 +38,9 @@ public class EnemyScript : NetworkBehaviour
     Animator anim;
 
     float currDistance = 10000000000;
-    bool dead = false, rate = false, once = false;
+    [SyncVar]
+    bool dead = false;
+    bool rate = false, once = false, first = false;
 
 	// Use this for initialization
 	void Start ()
@@ -46,7 +50,7 @@ public class EnemyScript : NetworkBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         target = null;
         ally = GameObject.FindGameObjectWithTag("Enemy");
-        health = 100f;
+        maxHealth = health;
         navAgent.speed = speed;
         newPos = transform.position;
 	}
@@ -257,6 +261,17 @@ public class EnemyScript : NetworkBehaviour
 
     public void TakeDamage(float _damage)
     {
+        if(!first)
+        {
+            first = true;
+            players = GameObject.FindGameObjectsWithTag("Player");
+            for (int i = 0; i < players.Length; i++)
+            {
+                GameObject temp = Instantiate(healthBar, transform.position, Quaternion.identity);
+                temp.GetComponent<EnemyHealthUi>().setenemy(this, players[i].GetComponentInChildren<Camera>());
+                temp.transform.parent = players[i].GetComponentInChildren<Canvas>().gameObject.transform;
+            }
+        }
         health -= _damage;
         if(type == EnemyType.meele)
             anim.SetTrigger("hurt");
@@ -302,9 +317,21 @@ public class EnemyScript : NetworkBehaviour
         }
     }
 
+    public float getHealth()
+    {
+        return health;
+    }
+    public float getMaxHealth()
+    {
+        return maxHealth;
+    }
+
     [Command]
     void CmdDie()
     {
+        GameObject temp = Instantiate(deathParticles, transform.position, Quaternion.identity);
+        NetworkServer.Spawn(temp);
+
         NetworkServer.Destroy(gameObject);
         Destroy(gameObject);
     }
