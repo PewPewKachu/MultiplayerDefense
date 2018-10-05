@@ -11,13 +11,12 @@ public class EnemyScript : NetworkBehaviour
     EnemyType type;
     enum logicState { idel, followPack, agro, attack};
     [SerializeField]
-    [SyncVar]
     logicState curState;
 
     [SerializeField]
     GameObject[] players, allies;
     [SerializeField]
-    GameObject projectile, healthBar, deathParticles;
+    GameObject projectile, healthBar, deathParticles, damageUI;
     [SerializeField]
     NavMeshAgent navAgent;
 
@@ -27,6 +26,9 @@ public class EnemyScript : NetworkBehaviour
     [SerializeField]
     [SyncVar]
     float health, speed, rateOfFire, maxHealth;
+
+    [SyncVar]
+    float thatsALOTofDAMAGE;
 
     //Raycast
     RaycastHit hit;
@@ -38,8 +40,7 @@ public class EnemyScript : NetworkBehaviour
     Animator anim;
 
     float currDistance = 10000000000;
-    [SyncVar]
-    bool dead = false;
+    [SyncVar]bool dead = false;
     bool rate = false, once = false, first = false;
 
 	// Use this for initialization
@@ -54,10 +55,15 @@ public class EnemyScript : NetworkBehaviour
         navAgent.speed = speed;
         newPos = transform.position;
 	}
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
+        //Animation
+        if (navAgent.destination != transform.position)
+            anim.SetBool("walk", true);
+        else
+            anim.SetBool("walk", false);
         GetClosestPlayer();
         if (navAgent != null && !dead)
         {
@@ -180,6 +186,7 @@ public class EnemyScript : NetworkBehaviour
                             }
                             break;
                         case EnemyType.ranged:
+                            anim.SetBool("walk", false);
                             navAgent.SetDestination(transform.position);
                             if (target != null)
                             {
@@ -207,14 +214,6 @@ public class EnemyScript : NetworkBehaviour
         }
         else
             navAgent.SetDestination(transform.position);
-        if (type == EnemyType.meele)
-        {
-            //Animation
-            if (navAgent.destination != navAgent.transform.position)
-                anim.SetBool("walk", true);
-            else
-                anim.SetBool("walk", false);
-        }
     }
 
     private void shoot()
@@ -261,7 +260,7 @@ public class EnemyScript : NetworkBehaviour
 
     public void TakeDamage(float _damage)
     {
-        if(!first)
+        if (!first)
         {
             first = true;
             players = GameObject.FindGameObjectsWithTag("Player");
@@ -272,9 +271,21 @@ public class EnemyScript : NetworkBehaviour
                 temp.transform.parent = players[i].GetComponentInChildren<Canvas>().gameObject.transform;
             }
         }
+        thatsALOTofDAMAGE = _damage;
+
+        if (health > 0)
+        {
+            players = GameObject.FindGameObjectsWithTag("Player");
+            for (int i = 0; i < players.Length; i++)
+            {
+                GameObject temp = Instantiate(damageUI, transform.position, Quaternion.identity);
+                temp.GetComponent<DamageUi>().setDamage(thatsALOTofDAMAGE, players[i].GetComponentInChildren<Camera>(), this);
+                temp.transform.parent = players[i].GetComponentInChildren<Canvas>().gameObject.transform;
+            }
+        }
+
         health -= _damage;
-        if(type == EnemyType.meele)
-            anim.SetTrigger("hurt");
+        anim.SetTrigger("hurt");
         Debug.Log(health);
         if (health <= 0)
         {
@@ -301,6 +312,11 @@ public class EnemyScript : NetworkBehaviour
             }
         }
 
+    }
+
+    public float getDamge()
+    {
+        return thatsALOTofDAMAGE;
     }
 
     void death()

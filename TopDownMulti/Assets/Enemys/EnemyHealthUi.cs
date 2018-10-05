@@ -10,6 +10,9 @@ public class EnemyHealthUi : NetworkBehaviour
     [SerializeField]
     float x_offset, y_offset;
 
+    [SyncVar]
+    float value;
+
     [SerializeField]
     Image fill;
 
@@ -28,8 +31,9 @@ public class EnemyHealthUi : NetworkBehaviour
 	
 	void Update ()
     {
-        slide.value = enemy.getHealth();
-        if (slide.value <= 0)
+        value = enemy.getHealth();
+        slide.value = value;
+        if (slide.value <= 0 || enemy == null)
             Destroy(gameObject);
 
         if (slide.value <= slide.maxValue * 0.25f)
