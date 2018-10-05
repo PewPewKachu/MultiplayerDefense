@@ -29,19 +29,23 @@ public class DamageUi : NetworkBehaviour
 	
 	void Update ()
     {
+        damage = enemy.getDamge();
         text.text = damage.ToString();
         text.color = Color.Lerp(text.color, trans, Time.deltaTime * 2.0f);
 
         offset += Vector3.up * Time.deltaTime * speed;
         offset.x += Xrange * Time.deltaTime;
-        transform.position = cam.WorldToScreenPoint(enemy.gameObject.transform.position) + offset;
+        if (enemy != null)
+            transform.position = cam.WorldToScreenPoint(enemy.gameObject.transform.position) + offset;
+        else
+            Die();
     }
 
     public void setDamage(float _damage, Camera _cam, EnemyScript _enemy)
     {
-        damage = _damage;
         cam = _cam;
         enemy = _enemy;
+        damage = enemy.getDamge();
     }
 
     void Die()

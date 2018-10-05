@@ -11,7 +11,6 @@ public class EnemyScript : NetworkBehaviour
     EnemyType type;
     enum logicState { idel, followPack, agro, attack};
     [SerializeField]
-    [SyncVar]
     logicState curState;
 
     [SerializeField]
@@ -41,8 +40,7 @@ public class EnemyScript : NetworkBehaviour
     Animator anim;
 
     float currDistance = 10000000000;
-    [SyncVar]
-    bool dead = false;
+    [SyncVar]bool dead = false;
     bool rate = false, once = false, first = false;
 
 	// Use this for initialization
@@ -314,6 +312,11 @@ public class EnemyScript : NetworkBehaviour
             }
         }
 
+    }
+
+    public float getDamge()
+    {
+        return thatsALOTofDAMAGE;
     }
 
     void death()
