@@ -37,6 +37,8 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     Text ammoText;
     [SerializeField]
+    Text primaryText;
+    [SerializeField]
     GameObject UpgradeScreen;
 
     //Ammo Stats
@@ -102,6 +104,8 @@ public class PlayerController : NetworkBehaviour {
             default:
                 break;
         }
+
+        UpdateUpgadesScreen();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -187,6 +191,16 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+    private void UpdateUpgadesScreen()
+    {
+        primaryText.text = primaryGun.gunName + "\n" +
+                           "Damage:    " + primaryGun.Damage + "\n" +
+                           "FireRate:  " + Math.Round((1.0f / primaryGun.FireRate), 2) + " shots/sec" + "\n" +
+                           "Accuracy:  " + primaryGun.Accuracy + "\n" +
+                           "Clip Size: " + primaryGun.ClipSize + "\n";
+
+    }
+
     [Command]
     private void CmdSwapWeapon(GunType _gunType)
     {
@@ -255,11 +269,21 @@ public class PlayerController : NetworkBehaviour {
             fireCooldown = currWeaponStats.FireRate;
             currWeaponStats.CurrentClip -= 1;
             currentClip = currWeaponStats.CurrentClip;
-            GameObject bulletToSpawn = (GameObject)Instantiate(bulletPrefab, transform.position + new Vector3(0, 1.3f, 0), playerObj.transform.rotation);
-            float randomAngle = 10 * ((100 - currWeaponStats.Accuracy) / 100f);
-            bulletToSpawn.transform.Rotate(0, UnityEngine.Random.Range(-randomAngle, randomAngle), 0);
-            bulletToSpawn.GetComponent<Bullet>().SetDamage(currWeaponStats.Damage);
-            NetworkServer.Spawn(bulletToSpawn);
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(transform.position, playerObj.transform.forward, 100.0f);
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].transform.tag == "Enemy")
+                {
+                    hits[i].collider.gameObject.GetComponent<EnemyScript>().TakeDamage(currWeaponStats.Damage);
+                }
+            }
+            //GameObject bulletToSpawn = (GameObject)Instantiate(bulletPrefab, transform.position + new Vector3(0, 1.3f, 0), playerObj.transform.rotation);
+            //float randomAngle = 10 * ((100 - currWeaponStats.Accuracy) / 100f);
+            //bulletToSpawn.transform.Rotate(0, UnityEngine.Random.Range(-randomAngle, randomAngle), 0);
+            //bulletToSpawn.GetComponent<Bullet>().SetDamage(currWeaponStats.Damage);
+            //NetworkServer.Spawn(bulletToSpawn);
 
         }
     }
