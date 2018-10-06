@@ -48,13 +48,13 @@ public class Bullet : NetworkBehaviour {
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            other.GetComponent<EnemyScript>().TakeDamage(damage);
-        }
-    }
+    //void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("Enemy"))
+    //    {
+    //        other.GetComponent<EnemyScript>().TakeDamage(damage);
+    //    }
+    //}
 
     public void SetDamage(float _damage)
     {
