@@ -67,7 +67,8 @@ public class PlayerController : NetworkBehaviour {
     [SerializeField]
     bool isReloading = false;
 
-    
+    [SerializeField]
+    Vector3 mousePos;
     double netDeltaTime;
     double netPrevTime;
 	// Use this for initialization
@@ -88,6 +89,9 @@ public class PlayerController : NetworkBehaviour {
         {
             return;
         }
+
+        Debug.DrawLine(-((transform.position - mousePos).normalized * 100f), playerObj.transform.position, Color.green);
+        Debug.DrawLine(mousePos, playerObj.transform.position, Color.yellow);
 
         #region UI
         switch (currWeaponStats.bulletType) 
@@ -141,6 +145,7 @@ public class PlayerController : NetworkBehaviour {
             if (myCam != null)
             {
                 myCam.GetComponent<PlayerCameraScript>().SetMousePos(targetPoint);
+                mousePos = targetPoint;
             }
             Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
             targetRotation.x = 0;
@@ -279,11 +284,14 @@ public class PlayerController : NetworkBehaviour {
                     hits[i].collider.gameObject.GetComponent<EnemyScript>().TakeDamage(currWeaponStats.Damage);
                 }
             }
-            //GameObject bulletToSpawn = (GameObject)Instantiate(bulletPrefab, transform.position + new Vector3(0, 1.3f, 0), playerObj.transform.rotation);
+            GameObject bulletToSpawn = (GameObject)Instantiate(bulletPrefab, transform.position + new Vector3(0, 1.3f, 0), playerObj.transform.rotation);
+            //Vector3 bulletTargetPos = -(transform.position - mousePos).normalized;
+            //Vector3 bulletTargetPos = -(new Vector3(transform.position.x, 0.0f,transform.position.z) - new Vector3(mousePos.x, 0.0f, mousePos.z)).normalized;
+            bulletToSpawn.GetComponent<Bullet>().SetTargetPos(mousePos);
             //float randomAngle = 10 * ((100 - currWeaponStats.Accuracy) / 100f);
             //bulletToSpawn.transform.Rotate(0, UnityEngine.Random.Range(-randomAngle, randomAngle), 0);
             //bulletToSpawn.GetComponent<Bullet>().SetDamage(currWeaponStats.Damage);
-            //NetworkServer.Spawn(bulletToSpawn);
+            NetworkServer.Spawn(bulletToSpawn);
 
         }
     }
